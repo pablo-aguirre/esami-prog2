@@ -1,22 +1,42 @@
 import java.util.Arrays;
 import java.util.Objects;
 
-/**
- * Le istanze di questa classe rappresentano dei vettori densi.
- * Gli oggetti di questo tipo sono immutabili.
- */
+/** Le istanze di questa classe rappresentano dei vettori densi. */
 public class VettoreDenso implements Vettore {
 
+    /** I valori del vettore. */
     private final int[] values;
 
-    /**
-     * Inizializza {@code this} affinché rappresenti un vettore (denso) contenente i
-     * valori dell'array {@code values}.
-     * 
-     * @param values array contenente i valori da assegnare a {@code this}
+    /*-
+     * AF:  l'i-esimo valore del vettore corrisponde all'i-esimo valore dell'array.
+     * RI:  values non è null ed ha almeno un elemento.
      */
-    public VettoreDenso(int[] values) {
-        this.values = Arrays.copyOf(values, values.length);
+
+    /**
+     * Costruttore che costruisce un vettore di dimensione data, con tutti i valori
+     * pari a 0.
+     * 
+     * @param dim la dimensione
+     * @throws IllegalArgumentException se la dimensione non è positiva
+     */
+    private VettoreDenso(final int dim) {
+        if (dim <= 0)
+            throw new IllegalArgumentException("La dimensione deve essere positiva.");
+        values = new int[dim];
+    }
+
+    /**
+     * Costruisce un vettore a partire da un array.
+     * 
+     * @param values l'array
+     * @throws IllegalArgumentException se {@code values} ha zero elementi
+     * @throws NullPointerException     se {@code values} è {@code null}
+     */
+    public VettoreDenso(final int[] values) {
+        Objects.requireNonNull(values, "L'array val non può essere null.");
+        if (values.length == 0)
+            throw new IllegalArgumentException("Il vettore deve comprendere almeno un valore.");
+        this.values = values.clone(); // per proteggere la rappresentazione
     }
 
     @Override
@@ -24,54 +44,39 @@ public class VettoreDenso implements Vettore {
         return values.length;
     }
 
-    /**
-     * @throws IllegalArgumentException se {@code i} non è un indice valido
-     */
     @Override
-    public int val(int i) {
+    public int val(final int i) {
         if (i < 0 || i >= values.length)
-            throw new IllegalArgumentException("indice non valido");
+            throw new IndexOutOfBoundsException("L'indice i non è valido.");
         return values[i];
     }
 
     @Override
     public Vettore per(int alpha) {
-        final int[] values = new int[dim()];
+        if (alpha == 0)
+            return new VettoreNullo(dim());
+        final VettoreDenso res = new VettoreDenso(dim());
         for (int i = 0; i < values.length; i++)
-            values[i] = val(i) * alpha;
-        return new VettoreDenso(values);
+            res.values[i] = values[i] * alpha;
+        return res;
     }
 
-    /**
-     * @throws IllegalArgumentException se {@code v} e {@code this} hanno dimensione
-     *                                  diversa
-     * @throws NullPointerException     se {@code v} è null
-     */
     @Override
     public Vettore più(Vettore v) {
-        Objects.requireNonNull(v, "v non può essere null");
-        if (v.dim() != dim())
-            throw new IllegalArgumentException("il vettore v non ha la stessa dimensione di this");
-        final int[] values = new int[dim()];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = val(i) + v.val(i);
-        }
-        return new VettoreDenso(values);
+        Objects.requireNonNull(v, "Il vettore v non può essere null");
+        if (!conforme(v))
+            throw new IllegalArgumentException("Il vettore v non è conforme a this.");
+        if (v instanceof VettoreNullo)
+            return this;
+        final VettoreDenso res = new VettoreDenso(dim());
+        for (int i = 0; i < values.length; i++)
+            res.values[i] = values[i] + v.val(i);
+        return res;
     }
 
     @Override
     public String toString() {
-        int iMax = dim() - 1;
-        if (iMax == -1)
-            return "()";
-
-        StringBuilder b = new StringBuilder("(");
-        for (int i = 0;; i++) {
-            b.append(val(i));
-            if (i == iMax)
-                return b.append(')').toString();
-            b.append(", ");
-        }
+        return Arrays.toString(values).replace("[", "(").replace("]", ")");
     }
 
 }

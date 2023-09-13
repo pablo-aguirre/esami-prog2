@@ -1,35 +1,51 @@
-public class MatriceNulla extends MatriceQuadrata {
+import java.util.Objects;
 
-    public MatriceNulla(int dim) {
-        super(dim);
+/** Classe che implementa la matrice nulla. */
+public class MatriceNulla extends MatriceAstratta {
+
+    private final int dim;
+
+    public MatriceNulla(final int dim) {
+        this.dim = dim;
     }
 
-    /**
-     * @throws IllegalArgumentException se {@code row} o {@code column} non sono
-     *                                  degli indici validi
-     */
     @Override
-    public int val(int row, int column) {
-        if (row < 0 || row >= dim)
-            throw new IllegalArgumentException("row dev'essere un indice valido");
-        if (column < 0 || column >= dim)
-            throw new IllegalArgumentException("column dev'essere un indice valido");
+    public int dim() {
+        return dim;
+    }
+
+    @Override
+    public int val(int row, int col) {
+        if (row < 0 || row >= dim())
+            throw new IndexOutOfBoundsException("La coordinata della riga non è valida ");
+        if (col < 0 || col >= dim())
+            throw new IndexOutOfBoundsException("La coordinata della colonna non è valida ");
         return 0;
     }
 
     @Override
-    public MatriceQuadrata per(int alpha) {
-        return new MatriceNulla(alpha);
+    public Matrice per(int alpha) {
+        return this;
     }
 
     @Override
-    public MatriceQuadrata più(MatriceQuadrata m) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'più'");
+    public Matrice più(Matrice M) {
+        Objects.requireNonNull(M, "La matrice M non può essere null");
+        if (!conforme(M))
+            throw new IllegalArgumentException("La matrice M e this non sono conformi.");
+        return M;
     }
 
     @Override
-    public MatriceQuadrata per(MatriceQuadrata m) {
+    public Matrice per(Matrice M) {
+        Objects.requireNonNull(M, "La matrice M non può essere null");
+        if (!conforme(M))
+            throw new IllegalArgumentException("La matrice M e this non sono conformi.");
+        return this;
+    }
+
+    @Override
+    public Matrice per(Vettore V) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'per'");
     }

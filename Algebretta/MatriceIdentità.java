@@ -1,45 +1,64 @@
 import java.util.Arrays;
+import java.util.Objects;
 
-public class MatriceIdentità extends MatriceQuadrata {
+/** Classe che implementa la matrice identità. */
+public class MatriceIdentità extends MatriceAstratta {
+
+    private final int dim;
 
     public MatriceIdentità(int dim) {
-        super(dim);
+        this.dim = dim;
     }
 
-    /**
-     * @throws IllegalArgumentException se {@code row} o {@code column} non sono
-     *                                  degli indici validi
-     */
     @Override
-    public int val(int row, int column) {
-        if (row < 0 || row >= dim)
-            throw new IllegalArgumentException("row dev'essere un indice valido");
-        if (column < 0 || column >= dim)
-            throw new IllegalArgumentException("column dev'essere un indice valido");
-        if (row == column)
+    public int dim() {
+        return dim;
+    }
+
+    @Override
+    public int val(int row, int col) {
+        if (row < 0 || row >= dim())
+            throw new IndexOutOfBoundsException("La coordinata della riga non è valida ");
+        if (col < 0 || col >= dim())
+            throw new IndexOutOfBoundsException("La coordinata della colonna non è valida ");
+        if (row == col)
             return 1;
         return 0;
     }
 
     @Override
-    public MatriceQuadrata per(int alpha) {
+    public Matrice per(int alpha) {
         if (alpha == 0)
-            return new MatriceNulla(dim);
+            return new MatriceNulla(dim());
         if (alpha == 1)
-            return new MatriceIdentità(dim);
-        final int[] values = new int[dim];
-        Arrays.fill(values, 0, dim, alpha);
-        return new MatriceDiagonale(dim, values);
+            return this;
+        final int[] newValues = new int[dim()];
+        Arrays.fill(newValues, 0, newValues.length, alpha);
+        return new MatriceDiagonale(newValues);
     }
 
     @Override
-    public MatriceQuadrata più(MatriceQuadrata m) {
+    public Matrice più(Matrice M) {
+        Objects.requireNonNull(M, "La matrice M non può essere null.");
+        if (!conforme(M))
+            throw new IllegalArgumentException("La matrice M non è conforme a this");
+        if (M instanceof MatriceNulla)
+            return this;
+        final int[][] newValues = new int[dim()][dim()];
+        for (int r = 0; r < dim(); r++)
+            for (int c = 0; c < dim(); c++)
+                newValues[r][c] = val(r, c) + M.val(r, c);
+        return new MatriceDensa(newValues);
+    }
+
+    @Override
+    public Matrice per(Matrice M) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'più'");
+        throw new UnsupportedOperationException("Unimplemented method 'per'");
     }
 
     @Override
-    public MatriceQuadrata per(MatriceQuadrata m) {
+    public Matrice per(Vettore V) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'per'");
     }

@@ -1,24 +1,68 @@
+/**
+ * Interfaccia che descrive il contratto di un vettore immutabile a valori
+ * interi.
+ */
 public interface Vettore {
     /**
-     * @return la dimensione di {@code this}
+     * Restituisce la dimensione di {@code this}, è un valore sempre positivo.
+     * 
+     * @return la dimensione
      */
-    public int dim();
+    int dim();
 
     /**
-     * @param i l'indice del valore da restituire
-     * @return il valore in posizione {@code i}-esima
+     * Restituisce il valore di coordinata data di {@code this}.
+     * 
+     * @param i la coordinata
+     * @return il valore
+     * @throws IndexOutOfBoundsException se la coordinata è negativa, o maggiore o
+     *                                   uguale alla dimensione di {@code this}
      */
-    public int val(final int i);
+    int val(final int i);
 
     /**
-     * @param alpha uno scalare
-     * @return il prodotto {@code this*alpha}
+     * Restituisce un nuovo vettore ottenuto moltiplicando {@code this} per lo
+     * scalare dato.
+     * 
+     * @param alpha lo scalare
+     * @return il nuovo vettore
      */
-    public Vettore per(final int alpha);
+    Vettore per(final int alpha);
 
     /**
-     * @param v il vettore da sommare a {@code this}
-     * @return la somma vettoriale {@code this+v}
+     * Restituisce un nuovo vettore ottenuto sommando {@code this} al vettore dato.
+     * 
+     * @param v il vettore
+     * @return il nuovo vettore
+     * @throws NullPointerException     se il vettore {@code v} è {@code null}
+     * @throws IllegalArgumentException se i vettori non sono conformi
      */
-    public Vettore più(final Vettore v);
+    Vettore più(final Vettore v);
+
+    /**
+     * Restituisce {@code true} se e solo se il vettore {@code v} ha la stessa
+     * dimensione di {@code this}.
+     * 
+     * @param v il vettore
+     * @return {@code true} se e solo se il vettore {@code v} è conforme a
+     *         {@code this}
+     * @throws NullPointerException se il vettore {@code v} è {@code null}
+     */
+    default boolean conforme(final Vettore v) {
+        return dim() == v.dim();
+    }
+
+    /**
+     * Restituisce {@code true} se e solo se la matrice {@code M} ha la stessa
+     * dimensione di {@code this}.
+     * 
+     * @param M la matrice
+     * @return {@code true} se e solo se la matrice {@code M} è conforme a
+     *         {@code this}
+     * @throws NullPointerException se la matrice {@code M} è {@code null}
+     */
+    default boolean conforme(final Matrice M) {
+        return dim() == M.dim();
+    }
+
 }
