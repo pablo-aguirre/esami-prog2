@@ -3,9 +3,23 @@ import java.util.Objects;
 /** Classe che implementa la matrice nulla. */
 public class MatriceNulla extends MatriceAstratta {
 
+    /** La dimensione della matrice. */
     private final int dim;
 
+    /*-
+     * AF:  la matrice nulla di dimensioni pari a dim
+     * RI:  dim > 0
+     */
+
+    /**
+     * Costruisca una matrice nulla data la sua dimensione.
+     * 
+     * @param dim la dimensione
+     * @throws IllegalArgumentException se {@code dim} non è positiva
+     */
     public MatriceNulla(final int dim) {
+        if (dim <= 0)
+            throw new IllegalArgumentException("La dimensione dev'essere positiva.");
         this.dim = dim;
     }
 
@@ -15,7 +29,7 @@ public class MatriceNulla extends MatriceAstratta {
     }
 
     @Override
-    public int val(int row, int col) {
+    public int val(final int row, final int col) {
         if (row < 0 || row >= dim())
             throw new IndexOutOfBoundsException("La coordinata della riga non è valida ");
         if (col < 0 || col >= dim())
@@ -24,20 +38,20 @@ public class MatriceNulla extends MatriceAstratta {
     }
 
     @Override
-    public Matrice per(int alpha) {
+    public Matrice per(final int alpha) {
         return this;
     }
 
     @Override
-    public Matrice più(Matrice M) {
-        Objects.requireNonNull(M, "La matrice M non può essere null");
+    public Matrice più(final Matrice M) {
+        Objects.requireNonNull(M, "La matrice M non può essere null.");
         if (!conforme(M))
             throw new IllegalArgumentException("La matrice M e this non sono conformi.");
         return M;
     }
 
     @Override
-    public Matrice per(Matrice M) {
+    public Matrice per(final Matrice M) {
         Objects.requireNonNull(M, "La matrice M non può essere null");
         if (!conforme(M))
             throw new IllegalArgumentException("La matrice M e this non sono conformi.");
@@ -45,9 +59,11 @@ public class MatriceNulla extends MatriceAstratta {
     }
 
     @Override
-    public Matrice per(Vettore V) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'per'");
+    public Vettore per(final Vettore v) {
+        Objects.requireNonNull(v, "Il vettore v non può essere null.");
+        if (!conforme(v))
+            throw new IllegalArgumentException("Il vettore e la matrice non sono conformi.");
+        return new VettoreNullo(dim);
     }
 
 }

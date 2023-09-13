@@ -3,10 +3,23 @@ import java.util.Objects;
 
 /** Classe che implementa la matrice identità. */
 public class MatriceIdentità extends MatriceAstratta {
-
+    /** La dimensione della matrice. */
     private final int dim;
 
+    /*-
+     * AF:  la matrice identità di dimensioni pari a dim
+     * RI:  dim > 0
+     */
+
+    /**
+     * Costruisce una matrice identità di dimensione data.
+     * 
+     * @param dim la dimensione
+     * @throws IllegalArgumentException se {@code dim} non è positiva
+     */
     public MatriceIdentità(int dim) {
+        if (dim <= 0)
+            throw new IllegalArgumentException("La dimensione deve essere positiva.");
         this.dim = dim;
     }
 
@@ -44,23 +57,23 @@ public class MatriceIdentità extends MatriceAstratta {
             throw new IllegalArgumentException("La matrice M non è conforme a this");
         if (M instanceof MatriceNulla)
             return this;
-        final int[][] newValues = new int[dim()][dim()];
-        for (int r = 0; r < dim(); r++)
-            for (int c = 0; c < dim(); c++)
-                newValues[r][c] = val(r, c) + M.val(r, c);
-        return new MatriceDensa(newValues);
+        return new MatriceDensa(this).più(M);
     }
 
     @Override
     public Matrice per(Matrice M) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'per'");
+        Objects.requireNonNull(M, "La matrice non può essere null.");
+        if (!conforme(M))
+            throw new IllegalArgumentException("Le matrici non sono conformi.");
+        return M;
     }
 
     @Override
-    public Matrice per(Vettore V) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'per'");
+    public Vettore per(final Vettore v) {
+        Objects.requireNonNull(v, "Il vettore non può essere null.");
+        if (!conforme(v))
+            throw new IllegalArgumentException("Il vettore e la matrice non sono conformi.");
+        return v;
     }
 
 }

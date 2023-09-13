@@ -55,7 +55,16 @@ public interface Matrice {
      */
     Matrice per(final Matrice M);
 
-    Matrice per(final Vettore V);
+    /**
+     * Restituisce il vettore ottenuto moltiplicanod {@code this} per il vettore
+     * dato.
+     * 
+     * @param v il vettore
+     * @return il risultato
+     * @throws NullPointerException se {@code v} è {@code null}
+     * @throws IllegalArgumentException se {@code this} e {@code v} non sono conformi
+     */
+    Vettore per(final Vettore v);
 
     /**
      * Restituisce {@code true} se e solo se la dimensione di {@code this} è uguale
