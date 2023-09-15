@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 /**
  * Classe che rappresenta una {@link Piastrella} romboidale.
  * Gli oggetti di questo tipo sono immutabili.
