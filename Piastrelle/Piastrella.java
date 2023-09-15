@@ -1,31 +1,27 @@
-/** Classe astratta che implementa parzialmente una {@link Superficie}. */
+/**
+ * Classe astratta e immutabile che rappresenta una <em> piastrella; implementa
+ * parzialmente l'interfaccia {@link Superficie}, il cui stato è dato dal
+ * costo.
+ */
 public abstract class Piastrella implements Superficie {
-    /** Il prezzo della Piastrella. */
-    private final int prezzo;
 
-    /*-
-     * AF:  ?
-     * RI:  prezzo non può essere negativo
-     */
+    /** Il costo della piastrella, sempre positivo. */
+    private final int costo;
 
     /**
-     * Inizializza il prezzo di {@code this}.
+     * Costruisce una piastrella dato il suo costo.
      * 
-     * @param prezzo il prezzo
-     * @throws IllegalArgumentException se {@code prezzo} non è positivo
+     * @param costo il costo
+     * @throws IllegalArgumentException se {@code costo} non è positivo
      */
-    public Piastrella(final int prezzo) {
-        if (prezzo < 0)
-            throw new IllegalArgumentException("Il prezzo deve essere positivo.");
-        this.prezzo = prezzo;
+    public Piastrella(final int costo) {
+        if (costo <= 0)
+            throw new IllegalArgumentException("Il costo deve essere positivo.");
+        this.costo = costo;
     }
 
     @Override
-    final public int costo() {
-        return prezzo;
+    public int costo() {
+        return costo;
     }
-
-    @Override
-    public abstract int superficie();
-
 }

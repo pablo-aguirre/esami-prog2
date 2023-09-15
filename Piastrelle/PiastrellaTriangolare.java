@@ -1,31 +1,36 @@
 import java.util.Objects;
 
 /**
- * Classe concreata che implementa una {@link Piastrella} triangolare.
+ * Classe che rappresenta una {@link Piastrella} triangolare.
  * Gli oggetti di questo tipo sono immutabili.
  */
 public class PiastrellaTriangolare extends Piastrella {
 
-    private final int base, altezza;
+    /** La base (sempre positiva). */
+    public final int base;
+    /** L'altezza (sempre positiva). */
+    public final int altezza;
 
     /*-
-     * AF:  AF(base, altezza) = una piastrella triangolare di base = base e altezza = altezza
+     * AF:  AF(base, altezza) = una piastrella triangolare di base e altezza uguali agli omonimi campi.
      * IR:  base e altezza sono positive
      */
 
     /**
-     * Inizializza {@code this} affinché rappresenti una piastrella triangolare di
-     * base, altezza e prezzo dati.
+     * Costruisce una piastrella triangolare dato il costo e la lunghezza della sua
+     * base altezza.
      * 
-     * @param prezzo  il prezzo
+     * @param costo   il costo
      * @param base    la base
      * @param altezza l'altezza
-     * @throws IllegalArgumentException se prezzo o base o altezza sono non positivi
+     * @throws IllegalArgumentException se costo, base o altezza non sono positivi
      */
-    public PiastrellaTriangolare(int prezzo, int base, int altezza) {
-        super(prezzo);
-        if (prezzo < 0 || base < 0 || altezza < 0)
-            throw new IllegalArgumentException("Prezzo, base e altezza non possono essere negativi.");
+    public PiastrellaTriangolare(final int costo, final int base, final int altezza) {
+        super(costo);
+        if (base <= 0)
+            throw new IllegalArgumentException("Base non può essere negativa.");
+        if (base <= altezza)
+            throw new IllegalArgumentException("Altezza non può essere negativa.");
         this.base = base;
         this.altezza = altezza;
     }
@@ -35,19 +40,19 @@ public class PiastrellaTriangolare extends Piastrella {
         return (base * altezza) / 2;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof PiastrellaTriangolare))
-            return false;
-        PiastrellaTriangolare o = (PiastrellaTriangolare) obj;
-        return o.altezza == altezza && o.base == base && costo() == o.costo();
-    }
+    // @Override
+    // public boolean equals(Object obj) {
+    //     if (this == obj)
+    //         return true;
+    //     if (!(obj instanceof PiastrellaTriangolare))
+    //         return false;
+    //     PiastrellaTriangolare o = (PiastrellaTriangolare) obj;
+    //     return o.altezza == altezza && o.base == base && costo() == o.costo();
+    // }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(base, altezza, costo());
-    }
+    // @Override
+    // public int hashCode() {
+    //     return Objects.hash(base, altezza, costo());
+    // }
 
 }
