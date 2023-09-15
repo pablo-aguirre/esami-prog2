@@ -1,7 +1,7 @@
 /** Classe astratta che implementa parzialmente una {@link Superficie}. */
 public abstract class Piastrella implements Superficie {
     /** Il prezzo della Piastrella. */
-    private int prezzo;
+    private final int prezzo;
 
     /*-
      * AF:  ?
@@ -14,7 +14,7 @@ public abstract class Piastrella implements Superficie {
      * @param prezzo il prezzo
      * @throws IllegalArgumentException se {@code prezzo} non è positivo
      */
-    public Piastrella(int prezzo) {
+    public Piastrella(final int prezzo) {
         if (prezzo < 0)
             throw new IllegalArgumentException("Il prezzo deve essere positivo.");
         this.prezzo = prezzo;
