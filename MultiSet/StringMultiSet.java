@@ -35,7 +35,9 @@ public interface StringMultiSet extends Iterable<String> {
      * @return {@code true} se e solo se {@code this} contiene {@code s}
      * @throws NullPointerException se {@code s} è {@code null}
      */
-    boolean contains(final String s);
+    default boolean contains(final String s) {
+        return multiplicity(s) > 0;
+    }
 
     /**
      * Restituisce la molteplicità in {@code this} dell’elemento specificato.
