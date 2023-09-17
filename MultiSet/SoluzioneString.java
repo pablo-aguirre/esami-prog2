@@ -3,7 +3,8 @@ import java.util.Scanner;
 /** Classe che implementa la lettura dei file di test. */
 public final class SoluzioneString {
 
-  private SoluzioneString() {}
+  private SoluzioneString() {
+  }
 
   private static void print(StringMultiSet s) {
     System.out.println(s.size() + " " + s);
