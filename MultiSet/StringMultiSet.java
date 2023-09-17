@@ -1,7 +1,8 @@
 /**
- * Interfaccia che descrive il contratto di un MultiSet di {@link String}, una
- * sorta di
- * insieme in cui però ciascun elemento può essere contenuto più di una volta.
+ * Interfaccia che descrive il contratto di un <strong>multiset</strong> di
+ * {@link String}, una
+ * sorta di insieme in cui ciascun elemento può essere contenuto più di una
+ * volta.
  */
 public interface StringMultiSet extends Iterable<String> {
     /**
@@ -9,18 +10,19 @@ public interface StringMultiSet extends Iterable<String> {
      * restituisce la molteplicità.
      * 
      * @param s l'elemento da aggiungere
-     * @return la molteplicità relativa all'elemento aggiunto, un valore non negativo
+     * @return la molteplicità dell'elemento dopo l'inserimento
      * @throws NullPointerException se {@code s} è {@code null}
      */
-    int add(String s);
+    int add(final String s);
 
     /**
      * Rimuove l'elemento specificato da {@code this}, restituendone la
      * molteplicità.
-     * <p>I tentativi di rimozione di elementi non presenti verranno ignorati.
+     * <p>
+     * I tentativi di rimozione di elementi non presenti verranno ignorati.
      * 
      * @param s l'elemento da rimuovere
-     * @return la molteplicità relativa all'elemento rimosso, un valore non negativo
+     * @return la molteplicità dell'elemento
      * @throws NullPointerException se {@code s} è {@code null}
      */
     int remove(final String s);
@@ -29,7 +31,7 @@ public interface StringMultiSet extends Iterable<String> {
      * Restitusce {@code true} se e solo se l’elemento specificato appartiene a
      * {@code this}.
      * 
-     * @param s l'elemento
+     * @param s l'elemento la cui presenza è da veriricare
      * @return {@code true} se e solo se {@code this} contiene {@code s}
      * @throws NullPointerException se {@code s} è {@code null}
      */
@@ -39,7 +41,7 @@ public interface StringMultiSet extends Iterable<String> {
      * Restituisce la molteplicità in {@code this} dell’elemento specificato.
      * Nel caso l'elemento non appartenga a {@code this}, restituisce {@code 0}.
      * 
-     * @param s l'elemento
+     * @param s l'elemento di cui restituire la molteplicità
      * @return la molteplicità di {@code s}, se presente, {@code 0} altrimenti
      * @throws NullPointerException se {@code s} è {@code null}
      */
@@ -49,28 +51,33 @@ public interface StringMultiSet extends Iterable<String> {
      * Restituisce la cardinalità di {@code this}, valore dato dalla somma delle
      * molteplicità dei suoi elementi.
      * 
-     * @return la cardinalità, un valore non negativo
+     * @return la cardinalità
      */
-    int size();
+    default int size() {
+        int size = 0;
+        for (String s : this)
+            size += multiplicity(s);
+        return size;
+    }
 
     /**
-     * Restituisce un multiset ottenuto come unione di {@code this} con quello
-     * indicato come argomento.
+     * Restituisce un nuovo multiset ottenuto come unione di {@code this} e quello
+     * dato.
      * Non modifica {@code this} nè {@code o}.
      * 
-     * @param o l'altro multiset
-     * @return il nuovo multiset
+     * @param o l'altro multiset con cui costruire l'unione
+     * @return l'unione tra i due multiset
      * @throws NullPointerException se {@code o} è {@code null}
      */
     StringMultiSet union(final StringMultiSet o);
 
     /**
-     * Restituisce un multiset ottenuto come intersezione di {@code this} con quello
-     * indicato come argomento.
+     * Restituisce un nuovo multiset ottenuto come intersezione di {@code this} e
+     * quello indicato come argomento.
      * Non modifica {@code this} nè {@code o}.
      * 
-     * @param o l'altro multiset
-     * @return il nuovo multiset
+     * @param o l'altro multiset con cui costruire l'intersezione
+     * @return l'intersezione tra i due multiset
      * @throws NullPointerException se {@code o} è {@code null}
      */
     StringMultiSet intersection(StringMultiSet o);

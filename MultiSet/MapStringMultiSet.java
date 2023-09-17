@@ -1,24 +1,23 @@
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.TreeMap;
 
 /**
- * Classe concreta che implementa l'interfaccia {@link StringMultiSet} mediante
- * della classe astratta {@link AbstractStringMultiSet}.
+ * Classe concreta che implementa il contratto definito nelll'interfaccia {@link StringMultiSet} basata su
+ * una mappa tra elementi e loro molteplicità.
  * Le istanze di questa classe sono mutabili.
  */
 public class MapStringMultiSet extends AbstractStringMultiSet {
 
-    /** Mappa le stringhe sulle molteplicità degli elementi. */
-    private Map<String, Integer> elements;
+    /** Mappa che, per ciascun elemento del multiset, ne indica la molteplicità. */
+    private final Map<String, Integer> elements;
 
     /*-
      * AF:  ogni elemento con chiave key di elements corrisponde ad un elemento del multiset la cui molteplicità corrisponde al value associato all'elemento con tale chiave
-     * RI:  elements != null
-     *      ogni chiave (String) di elements è != null
+     * RI:  elements != null    (vero in costruzione e successivamente in quanto final)
+     *      ogni chiave (String) di elements è != null      (garantito dai metodi che ne mutano il contenuto)
      *      ogni valore associato ad ogni chiave è positivo
      */
 
@@ -26,44 +25,38 @@ public class MapStringMultiSet extends AbstractStringMultiSet {
      * Costruisce un nuovo multiset vuoto.
      */
     public MapStringMultiSet() {
-        elements = new TreeMap<String, Integer>();
+        elements = new HashMap<String, Integer>();
     }
 
     @Override
     public int add(final String s) {
         Objects.requireNonNull(s, "s non può essere null");
-        if (!contains(s)) {
-            elements.put(s, 1);
-            return 0;
-        }
-        int res = elements.get(s) + 1;
-        elements.put(s, res);
-        return res;
+        int m = multiplicity(s);
+        elements.put(s, ++m);
+        return m;
     }
 
-    /**
-     * @throws NoSuchElementException se {@code this} non contiene {@code s}
-     */
     @Override
     public int remove(final String s) {
         Objects.requireNonNull(s, "s non può essere null");
-        if (!contains(s))
-            throw new NoSuchElementException("elemento " + s + " non presente");
-        int res = elements.get(s);
-        elements.replace(s, --res);
-        return res;
+        int m = multiplicity(s);
+        if (m == 1)
+            elements.remove(s);
+        else if (m > 1)
+            elements.put(s, m - 1);
+        return m;
+    }
+
+    @Override
+    public int multiplicity(final String s) {
+        Objects.requireNonNull(s, "s non può essere null");
+        return elements.containsKey(s) ? elements.get(s) : 0;
     }
 
     @Override
     public boolean contains(final String s) {
         Objects.requireNonNull(s, "s non può essere null");
         return elements.containsKey(s);
-    }
-
-    @Override
-    public int multiplicity(final String s) {
-        Objects.requireNonNull(s, "s non può essere null");
-        return elements.get(s);
     }
 
     @Override
@@ -78,12 +71,8 @@ public class MapStringMultiSet extends AbstractStringMultiSet {
     public StringMultiSet union(final StringMultiSet o) {
         Objects.requireNonNull(o, "o non può essere null");
         MapStringMultiSet res = new MapStringMultiSet();
-        for (String k : o) {
-            int max = o.multiplicity(k);
-            if (contains(k) && multiplicity(k) > max)
-                max = multiplicity(k);
-            res.elements.put(k, max);
-        }
+        for (String k : o)
+            res.elements.put(k, Math.max(o.multiplicity(k), multiplicity(k)));
         for (String k : this)
             if (!res.contains(k))
                 res.elements.put(k, multiplicity(k));
@@ -94,13 +83,9 @@ public class MapStringMultiSet extends AbstractStringMultiSet {
     public StringMultiSet intersection(StringMultiSet o) {
         Objects.requireNonNull(o, "o non può essere null");
         MapStringMultiSet res = new MapStringMultiSet();
-        for (String k1 : this) {
-            if (o.contains(k1)) {
-                int min = multiplicity(k1) < o.multiplicity(k1) ? multiplicity(k1) : o.multiplicity(k1);
-                for (int i = 0; i < min; i++)
-                    res.add(k1);
-            }
-        }
+        for (String k : this) 
+            if (o.contains(k))
+                res.elements.put(k, Math.min(o.multiplicity(k), multiplicity(k)));
         return res;
     }
 
