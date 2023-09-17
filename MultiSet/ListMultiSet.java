@@ -7,8 +7,7 @@ import java.util.Objects;
 
 /**
  * Classe concreta che implementa il contratto definito in {@link MultiSet}.
- * Questa classe usa una lista con elementi ripetuti per rappresentare il
- * multiset.
+ * Si basa su una lista con ripetizioni.
  * Le istanze di questa classe sono mutabili.
  */
 public class ListMultiSet<E> extends AbstractMultiSet<E> {
@@ -43,6 +42,16 @@ public class ListMultiSet<E> extends AbstractMultiSet<E> {
         final int res = multiplicity(o);
         elements.remove(o);
         return res;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return elements.contains(o);
+    }
+
+    @Override
+    public int size() {
+        return elements.size();
     }
 
     @Override

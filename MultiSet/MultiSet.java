@@ -1,12 +1,5 @@
 /**
- * <p>
  * Interfaccia che descrive il contratto di un <strong>multiset</strong>.
- * <p>
- * I metodi che hanno per argomento un <strong>elemento</strong> sono:
- * <ul>
- * <li> 
- * <li> 
- * </ul>
  */
 interface MultiSet<E> extends Iterable<E> {
     /**
@@ -15,7 +8,8 @@ interface MultiSet<E> extends Iterable<E> {
      * @param e l'elemento da aggiungere
      * @return la molteplicità dell'elemento dopo l'aggiunta
      * @throws NullPointerException se {@code e} è {@code null}
-     * @throws ClassCastException se l'elemento è di tipo tale da non poter essere aggiunto.
+     * @throws ClassCastException   se l'elemento è di tipo tale da non poter essere
+     *                              aggiunto.
      */
     int add(E e);
 
