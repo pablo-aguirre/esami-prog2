@@ -32,7 +32,7 @@ public final class Soluzione {
   }
 
   public static void main(String[] args) {
-    final MultiSet<String> a = new ListMultiSet<>(), b = new ListMultiSet<>();
+    final MultiSet<String> a = new ListMultiSet<>(), b = new HashMapMultiSet<>();
     try (Scanner sc = new Scanner(System.in)) {
       try (Scanner fl = new Scanner(sc.nextLine())) {
         while (fl.hasNext()) a.add(fl.next());
