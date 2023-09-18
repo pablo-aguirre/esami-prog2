@@ -12,15 +12,15 @@ import java.util.Objects;
  */
 public class HashMapMultiSet<E> extends AbstractMultiSet<E> {
 
-    /** Mappa gli elementi di tipo {@code E} alle sue molteplicità. */
-    final Map<E, Integer> elements;
+    /** Mappa che, per ciascun elemento del multiset, ne indica la molteplicità. */
+    private final Map<E, Integer> elements;
 
-    /*-
+    /*
      * AF(elements) =   multiset i cui elementi corrispondono alle chiavi della
      *                  mappa e le cui molteplicità corrispondono ai valori
      *                  associati a tali chiavi
      * IR(elements) =   elements != null    (verificato in costruzione e successivamente in quanto final)
-     *                  ogni elemento della mappa è != null     (verificato durante l'aggiunta)
+     *                  ogni chiave è != null     (verificato durante l'aggiunta)
      *                  i valori associati alle chiavi sono > 0
      */
 
@@ -51,14 +51,14 @@ public class HashMapMultiSet<E> extends AbstractMultiSet<E> {
     @Override
     public boolean contains(Object o) {
         Objects.requireNonNull(o, "o non può essere null");
-        return elements.get(o) != null ? true : false;
+        return elements.containsKey(o);
     }
 
     @Override
     public int size() {
         int res = 0;
-        for (E e : this)
-            res += multiplicity(e);
+        for (int m : elements.values())
+            res += m;
         return res;
     }
 
