@@ -1,18 +1,36 @@
+import java.util.NoSuchElementException;
+
 /**
- * Interfaccia che descrive il contratto di un <strong>listino</strong>, il
- * quale permette di rappresentare diverse politiche di prezzo per un oggetto
- * {@link Vendibile}.
+ * Interfaccia che descrive il contratto di un <strong>listino</strong> di
+ * prezzi.
+ * <p>
+ * Un listino permette di determinare il prezzo di un {@link Giocattolo} secondo
+ * una politica a scelta.
  */
 public interface Listino {
+
     /**
-     * Restituisce il prezzo complessivo della quantità di un oggetto vendibile specificato.
-     * Il prezzo complessivo viene determinato secondo una politica di prezzo.
-     * 
-     * @param o        l'oggetto
-     * @param quantity la quantità
-     * @return il prezzo complessivo
-     * @throws IllegalArgumentException se {@code quantity} non è positivo
-     * @throws NullPointerException     se {@code o} è {@code null}
+     * Indica se il listino conosce il prezzo di un dato giocattolo.
+     *
+     * @param giocattolo il giocattolo.
+     * @return se il listino conosce, o meno, il prezzo del giocattolo.
+     * @throws NullPointerException se {@code giocattolo} è {@code null}
      */
-    int totalPrice(Vendibile o, int quantity);
+    public boolean conosce(final Giocattolo giocattolo);
+
+    /**
+     * Restituisce il prezzo complessivo di una quantità di un giocattolo
+     * specificato.
+     * Il prezzo complessivo dev'essere determinato secondo una politica
+     * arbitraria.
+     * 
+     * @param g        il giocattolo
+     * @param n la quantità
+     * @return il prezzo complessivo
+     * @throws IllegalArgumentException se {@code n} non è positivo
+     * @throws NullPointerException     se {@code o} è {@code null}
+     * @throws NoSuchElementException   se il giocattolo {@code g} non è noto al
+     *                                  listino
+     */
+    int prezzo(final int n, final Giocattolo g);
 }
