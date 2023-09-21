@@ -234,7 +234,41 @@ public class Playlist implements Iterable<Album.Brano> {
      * 
      * @return l'iteratore sugli album
      */
+    public Iterator<Album> album() {
+        return new Iterator<Album>() {
+            /** Un iteratore dei brani di questa playlist. */
+            private Iterator<Album.Brano> it = iterator();
+            /** Il prossimo album da restituire. */
+            private Album next = null;
+            /** L'insieme degli album restituiti da next(). */
+            private final Set<Album> restituiti = new HashSet<>();
 
+            @Override
+            public boolean hasNext() {
+                if (next != null)
+                    return true;
+                while (it.hasNext()) {
+                    next = it.next().album();
+                    if (!restituiti.contains(next)) {
+                        restituiti.add(next);
+                        return true;
+                    }
+                }
+                next = null;
+                return false;
+            }
+
+            @Override
+            public Album next() {
+                if (!hasNext())
+                    throw new NoSuchElementException();
+                final Album res = next;
+                next = null;
+                return res;
+            }
+
+        };
+    }
 
     @Override
     public String toString() {
