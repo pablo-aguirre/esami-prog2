@@ -25,7 +25,14 @@ public enum Valuta {
     Yen('¥');
 
     /** Il simbolo della valuta. */
-    private final char simbol;
+    private final char simbolo;
+
+    /**
+     * Inizializza il simbolo di questa valuta.
+     */
+    private Valuta(final char simbolo) {
+        this.simbolo = simbolo;
+    }
 
     /**
      * Restituisce il simbolo di questa valuta.
@@ -33,13 +40,12 @@ public enum Valuta {
      * @return il simbolo
      */
     public char getSimbol() {
-        return this.simbol;
+        return this.simbolo;
     }
 
-    /**
-     * Inizializza il simbolo di questa valuta.
-     */
-    private Valuta(final char simbol) {
-        this.simbol = simbol;
+    @Override
+    public String toString() {
+        return "" + simbolo;
     }
+
 }

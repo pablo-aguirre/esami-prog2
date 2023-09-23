@@ -2,98 +2,38 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import javax.naming.OperationNotSupportedException;
-
 /**
  * Classe concreta che rappresenta un <strong>cambia valute</strong>.
  * <p>
  * Un cambia valute è un servizio dotato di una {@link Cassa} che, data
  * una serie di {@link Tasso}, può cambiare a richiesta un importo
- * (in una data valuta) in una valuta differente.
+ * da una data valuta ad una valuta differente.
  * <p>
  * Le istanze di questa classe sono mutabili.
  */
-public class CambiaValute implements Iterable<CambiaValute.Tasso> {
+public class CambiaValute {
 
-    /**
-     * Record che rappresenta un <strong>tasso</strong> di cambio.
-     * <p>
-     * Un tasso di cambio è caratterizzato da due importi (di valute diverse) e
-     * permette di convertire qualunque multiplo del primo nello stesso
-     * multiplo del secondo.
-     * <p>
-     * Le istanze di questo tipo sono immutabili.
-     */
-    public static record Tasso(Importo importo1, Importo importo2) {
-        /*
-         * RI:
-         * importo1 e importo2 sono != null
-         * importo1 e importo2 hanno valuta diversa
-         * importo1 e importo2 hanno valore positivo
-         */
-
-        /**
-         * Costruisce un tasso di cambio dati l'importo di una valuta e l'importo di
-         * un'altra valuta.
-         * 
-         * @param primo   il primo importo
-         * @param secondo il secondo importo
-         * @throws NullPointerException     se uno dei parametri è {@code null}
-         * @throws IllegalArgumentException se le valute dei due importi sono uguali
-         * 
-         */
-        public Tasso(final Importo importo1, final Importo importo2) {
-            this.importo1 = importo1;
-            this.importo2 = importo2;
-        }
-
-        /**
-         * Due tassi sono equivalenti se hanno le valute dei loro importi
-         * rispettivamente uguali.
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this)
-                return true;
-            if (!(obj instanceof Tasso))
-                return false;
-            Tasso o = (Tasso) obj;
-            return o.importo1.getValuta().equals(importo1.getValuta());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(importo1.getValuta().hashCode(), importo2.getValuta().hashCode());
-        }
-
-        @Override
-        public String toString() {
-            return importo1.toString() + "=" + importo2.toString();
-        }
-
-    }
-
-    /** La cassa. */
-    private final Cassa cassa;
-    /** La lista di tassi di cambio. */
-    private final List<Tasso> tassi;
+    /** La cassa del cambia valute. */
+    private final Cassa cassa = new Cassa();
+    /** La lista di tassi di cambio noti al cambia valute. */
+    private final Cambi cambi = new Cambi();
 
     /*
      * RI:
-     * cassa e tassi != null
-     * tassi non vuoto e non contiene tassi uguali
+     * - cassa e cambi != null
      */
 
     /**
-     * Costruisce un nuovo cambia valute data una lista di importi da depositare.
+     * Costruisce un nuovo cambia valute dati gli importi iniziali.
      * 
-     * @param importi la lista degli importi da depositare nella {@link Cassa}
-     * @throws NullPointerException     se importi è {@code null}
-     * @throws IllegalArgumentException se importi contiene almeno due importi con
-     *                                  la stessa valuta
+     * @param importi gli importi da versare
+     * @throws NullpointerException     se importi è, o contiene, {@code null}
+     * @throws IllegalArgumentException se uno degli importi non è positivo
      */
     public CambiaValute(final List<Importo> importi) {
-
+        Objects.requireNonNull(importi, "Gli importi non possono essere null.");
+        for (Importo importo : importi)
+            cassa.versa(importo);
     }
 
     /**
@@ -101,11 +41,14 @@ public class CambiaValute implements Iterable<CambiaValute.Tasso> {
      * Se non esiste il tasso specificato, esso viene aggiunto.
      * 
      * @param tasso il nuovo tasso
+     * @return {@code true} se il tasso sostituisce un tasso già presente,
+     *         {@code false} altrimenti
      * @throws NullPointerException se tasso è {@code null}
      */
 
-    public void aggiorna(final CambiaValute.Tasso tasso) {
-
+    public boolean aggiorna(final Cambi.Tasso tasso) {
+        Objects.requireNonNull(tasso, "Il tasso non può essere null.");
+        return cambi.aggiorna(tasso);
     }
 
     /**
@@ -114,28 +57,55 @@ public class CambiaValute implements Iterable<CambiaValute.Tasso> {
      * Nei seguenti casi:
      * <ul>
      * <li>tasso non disponibile
-     * <li>la valuta di {@code importo} e {@code valuta} sono identiche
-     * <li>fondi nella {@code valuta} richiesta non sono disponibili
+     * <li>la valuta di {@code da} e {@code valuta} sono identiche
+     * <li>fondi nella valuta richiesta non sono disponibili
      * </ul>
      * viene generata un'eccezione indicando il caso specifico.
      * 
-     * @param importo l'importo richiesto
-     * @param valuta  la valuta da cambiare
-     * @throws OperationNotSupportedException l'operazione richiesta non è
-     *                                        supportata
+     * @param da     l'importo richiesto
+     * @param valuta la valuta da cambiare
+     * @throws NullpointerException     se da o valuta sono {@code null}
+     * @throws IllegalArgumentException in uno dei casi specificati sopra
      */
-    public void cambio(final Importo importo, final Valuta valuta) throws OperationNotSupportedException {
+    public Importo cambia(final Importo da, Valuta valuta) {
+        Objects.requireNonNull(da, "L'importo non può essere null.");
+        Objects.requireNonNull(valuta, "La valuta non può essere null.");
+        if (da.valuta == valuta)
+            throw new IllegalArgumentException("Il cambio tra due valute uguali non è possibile.");
+        final Cambi.Tasso tasso = cambi.cerca(da.valuta, valuta);
+        if (tasso == null)
+            throw new IllegalArgumentException("Il tasso di cambio richiesto non è disponibile.");
+        final Importo a = da.equivalente(tasso);
+        if (cassa.totale(valuta).compareTo(a) < 0)
+            throw new IllegalArgumentException("Fondi non sufficienti.");
+        cassa.versa(da);
+        cassa.preleva(a);
+        return a;
     }
 
-    @Override
-    public Iterator<Tasso> iterator() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'iterator'");
+    /**
+     * Restituisce un iteratore che consente di iterare gli importi presenti nella
+     * cassa del cambio valute.
+     * 
+     * @return l'iteratore
+     */
+    public Iterator<Importo> importi() {
+        return cassa.iterator();
+    }
+
+    /**
+     * Restituisce un iteratore che consente di iterare i tassi noti al cambia
+     * valute.
+     * 
+     * @return l'iteratore
+     */
+    public Iterator<Cambi.Tasso> tassi() {
+        return cambi.iterator();
     }
 
     @Override
     public String toString() {
-        return "CambiaValute []";
+        return cambi.toString() + "\n" + cassa.toString();
     }
 
 }
