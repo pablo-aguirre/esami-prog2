@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Classe concreta che implementa un {@link BoolVect} denso.
+ * Classe concreta che implementa un {@link BoolVect} denso di taglia assegnata.
  * <p>
  * Le istanze di questa classe sono mutabili.
  */
@@ -11,19 +11,20 @@ public class DenseBoolVect extends AbstractBoolVect {
     /** Array che contiene i valori del boolvect. */
     private final boolean[] valori;
     /** La dimensione del boolvect. */
-    private int dimensione;
+    private int dimensione = 0;
 
     /*
      * AF:
-     * - il componente di posizione i-esima corrisponde a valori[valori.length-i-1]
+     * - il componente di posizione i-esima corrisponde a valori[i]
      * - valori.legth corrisponde alla taglia di questo boolvect
-     * - l'indice più dell'elemento di valori con valore true (+1) corrisponde alla
+     * - l'indice più grande dell'elemento con valore true (+1) corrisponde alla
      * dimensione di questo boolvect
      * 
      * RI:
      * - valori è != null
+     * - valori[dimensione - 1] == true && valori[p] == false se p >= dimensione
      * - valori contiene almeno un elemento
-     * - dimensione è compreso fra 1 e valori.length
+     * - dimensione è compreso fra 0 e valori.length (estremi inclusi)
      */
 
     /**
@@ -36,7 +37,6 @@ public class DenseBoolVect extends AbstractBoolVect {
         if (taglia <= 0)
             throw new IllegalArgumentException("La taglia deve essere positiva.");
         valori = new boolean[taglia];
-        dimensione = 0;
     }
 
     /**
@@ -80,52 +80,62 @@ public class DenseBoolVect extends AbstractBoolVect {
     }
 
     @Override
-    public boolean valore(final int posizione) {
+    public boolean leggi(final int posizione) {
         Objects.checkIndex(posizione, valori.length);
-        return valori[posizione];
+        if (posizione >= dimensione)
+            return false;
+        else
+            return valori[posizione];
     }
 
     @Override
-    public void settaValore(final int posizione, final boolean valore) {
+    public void scrivi(final int posizione, final boolean valore) {
         Objects.checkIndex(posizione, valori.length);
+        if (posizione >= taglia() && valore)
+            throw new IndexOutOfBoundsException(
+                    "Impossibile scrivere un valore di verità vero in posizione maggiore o uguale alla taglia.");
         valori[posizione] = valore;
-        if (valore && posizione > dimensione)
-            dimensione = posizione;
+        if (valore && posizione >= dimensione)
+            dimensione = posizione + 1;
+        else if (!valore && posizione == dimensione - 1)
+            while (dimensione > 0 && !valori[dimensione - 1])
+                dimensione--;
     }
 
     @Override
-    public BoolVect and(final BoolVect altro) {
+    public void and(final BoolVect altro) {
         Objects.requireNonNull(altro, "L'altro boolvect non può essere null.");
 
-        final DenseBoolVect res = new DenseBoolVect(Math.min(dimensione, altro.dim()));
-        for (int i = 0; i < res.taglia(); i++)
-            res.valori[i] = valori[i] && altro.valore(i);
-        res.dimensione = res.taglia();
-        return res;
+        final int dimMax = Math.max(dim(), altro.dim());
+        for (int i = 0; i < dimMax; i++)
+            scrivi(i, leggi(i) && altro.leggi(i));
     }
 
     @Override
-    public BoolVect or(final BoolVect altro) {
+    public void or(final BoolVect altro) {
         Objects.requireNonNull(altro, "L'altro boolvect non può essere null.");
 
-        final DenseBoolVect res = new DenseBoolVect(Math.max(dimensione, altro.dim()));
-        for (int i = 0; i < res.taglia(); i++)
-            res.valori[i] = valori[i] || altro.valore(i);
-        res.dimensione = res.taglia();
-        return res;
+        if (taglia() < altro.dim())
+            throw new IllegalArgumentException("La taglia di questo vettore è minore della dimensione di altro.");
+        final int dimMax = Math.max(dim(), altro.dim());
+        for (int i = 0; i < dimMax; i++)
+            scrivi(i, leggi(i) || altro.leggi(i));
     }
 
     @Override
-    public BoolVect xor(final BoolVect altro) {
+    public void xor(final BoolVect altro) {
         Objects.requireNonNull(altro, "L'altro boolvect non può essere null.");
 
-        final DenseBoolVect res = new DenseBoolVect(Math.max(dimensione, altro.dim()));
-        for (int i = 0; i < res.taglia(); i++) {
-            res.valori[i] = valori[i] ^ altro.valore(i);
-            if(res.valori[i])
-                res.dimensione = i + 1;
-        }
-        return res;
+        if (taglia() < altro.dim())
+            throw new IllegalArgumentException("La taglia di questo vettore è minore della dimensione di altro.");
+        final int dimMax = Math.max(dim(), altro.dim());
+        for (int i = 0; i < dimMax; i++)
+            scrivi(i, leggi(i) ^ altro.leggi(i));
+    }
+
+    @Override
+    public void pulisci() {
+        Arrays.fill(valori, false);
     }
 
 }

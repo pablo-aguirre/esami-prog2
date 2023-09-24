@@ -22,6 +22,10 @@ public interface BoolVect {
 
     /**
      * Restituisce la dimensione di questo boolvect.
+     * <p>
+     * La dimensione è il più grande intero tale che il valore {@code d} di verità
+     * in posizione {@code d-1} del boolvect è {@code true}. La dimensione ha un
+     * valore compreso tra 0 e la {@code taglia} (estremi inclusi).
      * 
      * @return la dimensione
      */
@@ -29,68 +33,90 @@ public interface BoolVect {
 
     /**
      * Restituisce la taglia di questo boolvect.
+     * <p>
+     * La taglia è il massimo valore possibile per la dimensione. La taglia è un
+     * valore positivo sempre maggiore o uguale alla {@code dimensione} e vale
+     * {@link Integer#MAX_VALUE} se la dimensione non è limitata.
      * 
      * @return la taglia
      */
     int taglia();
 
     /**
-     * Restituisce il valore nella posizione data.
+     * Legge il valore nella posizione data.
+     * <p>
+     * Se la posizione indicata eccede la dimensione (o taglia) viene restituito
+     * {@code false}.
      * 
      * @param posizione la posizione del valore da leggere
      * @return il valore
-     * @throws IndexOutOfBoundsException se la posizione è minore di zero o maggiore
-     *                                   della taglia di questo boolvect
+     * @throws IndexOutOfBoundsException se la posizione è negativa
      */
-    boolean valore(final int posizione);
+    boolean leggi(final int posizione);
 
     /**
-     * Scrive il valore dato nella posizione i-esima.
+     * Scrive il valore dato nella posizione specificata
      * 
      * @param posizione la posizione del valore da scrivere
      * @param valore    il valore da scrivere
-     * @throws IndexOutOfBoundsException se la posizione è minore di zero o maggiore
-     *                                   della taglia di questo boolvect
+     * @throws IndexOutOfBoundsException se la posizione è negativa, o il valore è
+     *                                   {@code true} e la posizione è maggiore o
+     *                                   uguale alla taglia
      */
-    void settaValore(final int posizione, final boolean valore);
+    void scrivi(final int posizione, final boolean valore);
 
     /**
-     * Restituisce un BoolVect ottenuto effettuando l'operazione {@coda and}
-     * componente a componente tra questo boolvect e un'altro boolvect.
-     * <p>
-     * La taglia del boolvect risultante viene determinata dalla <em>dimensione
-     * minima</em> tra questo boolvect e l'altro.
+     * Rende questo boolvect uguale all'<em>and componente a componente</em> di
+     * questo boolvect e quello specificato.
      * 
      * @param altro l'altro boolvect
-     * @return il risultato
      * @throws NullPointerException se altro è {@code null}
      */
-    BoolVect and(final BoolVect altro);
+    void and(final BoolVect altro);
 
     /**
-     * Restituisce un BoolVect ottenuto effettuando l'operazione {@coda or}
-     * componente a componente tra questo boolvect e un'altro boolvect.
-     * <p>
-     * La taglia del boolvect risultante viene determinata dalla <em>dimensione
-     * massima</em> tra questo boolvect e l'altro.
+     * Rende questo boolVect uguale all'<em>or componente a componente</em> di
+     * questo boolvect e quello specificato.
      * 
      * @param altro l'altro boolvect
-     * @return il risultato
-     * @throws NullPointerException se altro è {@code null}
+     * @throws NullPointerException     se altro è {@code null}
+     * @throws IllegalArgumentException se la taglia di questo boolvect è minore
+     *                                  della dimensione dell'altro boolvect
      */
-    BoolVect or(final BoolVect altro);
+    void or(final BoolVect altro);
 
     /**
-     * Restituisce un BoolVect ottenuto effettuando l'operazione {@coda xor}
-     * componente a componente tra questo boolvect e un'altro boolvect.
-     * <p>
-     * La taglia del boolvect risultante viene determinata dalla <em>dimensione
-     * massima</em> tra questo boolvect e l'altro.
+     * Rende questo boolvect uguale allo <em>xor componente a componente</em> di
+     * questo boolvect e quello specificato.
      * 
      * @param altro l'altro boolvect
-     * @return il risultato
-     * @throws NullPointerException se altro è {@code null}
+     * @throws NullPointerException     se altro è {@code null}
+     * @throws IllegalArgumentException se la taglia di questo boolvect è minore
+     *                                  della dimensione dell'altro boolvect
      */
-    BoolVect xor(final BoolVect altro);
+    void xor(final BoolVect altro);
+
+    /**
+     * Rende {@code false} tutti i valori di verità di questo boolvect.
+     */
+    void pulisci();
+
+    /**
+     * Rende questo boolvect uguale ai valori di verità specificati nella stringa
+     * data.
+     * <p>
+     * La stringa data deve contenere solo caratteri '{@code V}' o '{@code F}'.
+     * 
+     * @param vals la stringa dei valori di verità.
+     * @throws IllegalArgumentException se la stringa è più lunga della taglia di
+     *                                  questo boolvect
+     * @throws NullPointerException     se vals è {@code null}
+     */
+    default void daString(final String vals) {
+        pulisci();
+        final int len = vals.length();
+        for (int i = 0; i < len; i++)
+            scrivi(i, vals.charAt(len - i - 1) == 'V');
+    }
 
 }

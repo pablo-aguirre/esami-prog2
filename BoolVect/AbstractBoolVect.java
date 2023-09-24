@@ -1,17 +1,26 @@
 /**
- * Classe astratta che implementa parzialmente il contratto definito da
- * {@link BoolVect}.
+ * Classe astratta che implementa parzialmente il contratto definito
+ * dall'interfaccia {@link BoolVect}.
  * <p>
- * Questa classe si limita a implementare {@code toString()}.
+ * Questa classe provvede una implementazione di {@link #toString()}.
  */
 public abstract class AbstractBoolVect implements BoolVect {
-
+    /**
+     * Restituisce la versione testule di questo BoolVect.
+     * <p>
+     * Se la dimensione del BoolVect è 0 restituisce '{@code F}', altrimenti
+     * restituisce una stringa che comprende solo caratteri ('{@code F}' o
+     * '{@code V}') in numero pari alla dimensione di questo boolvect.
+     *
+     * @return la rappresentazione testuale di questo boolvect come da specifiche
+     */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = taglia() - 1; i >= 0; i++)
-            sb.append(valore(i) ? 'V' : 'F');
-        return sb.toString();
+        if (dim() == 0)
+            return "F";
+        final StringBuilder b = new StringBuilder();
+        for (int i = dim() - 1; i >= 0; i--)
+            b.append(leggi(i) ? 'V' : 'F');
+        return b.toString();
     }
-
 }
